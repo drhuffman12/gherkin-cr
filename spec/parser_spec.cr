@@ -1,9 +1,9 @@
-require 'gherkin/parser'
-require 'gherkin/token_scanner'
-require 'gherkin/token_matcher'
-require 'gherkin/ast_builder'
-require 'gherkin/errors'
-require 'rspec'
+require "gherkin/parser"
+require "gherkin/token_scanner"
+require "gherkin/token_matcher"
+require "gherkin/ast_builder"
+require "gherkin/errors"
+require "rspec"
 
 module Gherkin
   describe Parser do
@@ -224,9 +224,9 @@ module Gherkin
       ast = parser.parse(TokenScanner.new("Feature: Foo\n" +
                                           "  Scenario: Bar\n" +
                                           "    Given x\n" +
-                                          '      """' + "\n" +
+                                          "      \"\"\"" + "\n" +
                                           "      closed docstring\n" +
-                                          '      """' + "\n"),
+                                          "      \"\"\"" + "\n"),
                          matcher)
 
       expect(ast).to eq({

@@ -1,8 +1,8 @@
-require 'json'
+require "json"
 
 module Gherkin
   DIALECT_FILE_PATH = File.expand_path("gherkin-languages.json", File.dirname(__FILE__))
-  DIALECTS = JSON.parse File.open(DIALECT_FILE_PATH, 'r:UTF-8').read
+  DIALECTS = JSON.parse File.open(DIALECT_FILE_PATH, "r:UTF-8").read
 
   class Dialect
     def self.for(name)
@@ -16,43 +16,43 @@ module Gherkin
     end
 
     def feature_keywords
-      @spec.fetch('feature')
+      @spec.fetch("feature")
     end
 
     def scenario_keywords
-      @spec.fetch('scenario')
+      @spec.fetch("scenario")
     end
 
     def scenario_outline_keywords
-      @spec.fetch('scenarioOutline')
+      @spec.fetch("scenarioOutline")
     end
 
     def examples_keywords
-      @spec.fetch('examples')
+      @spec.fetch("examples")
     end
 
     def background_keywords
-      @spec.fetch('background')
+      @spec.fetch("background")
     end
 
     def given_keywords
-      @spec.fetch('given')
+      @spec.fetch("given")
     end
 
     def when_keywords
-      @spec.fetch('when')
+      @spec.fetch("when")
     end
 
     def then_keywords
-      @spec.fetch('then')
+      @spec.fetch("then")
     end
 
     def and_keywords
-      @spec.fetch('and')
+      @spec.fetch("and")
     end
 
     def but_keywords
-      @spec.fetch('but')
+      @spec.fetch("but")
     end
   end
 end

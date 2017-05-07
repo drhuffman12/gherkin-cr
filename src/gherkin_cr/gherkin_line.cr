@@ -13,7 +13,7 @@ module Gherkin
     end
 
     def start_with_title_keyword?(keyword)
-      start_with?(keyword+':') # The C# impl is more complicated. Find out why.
+      start_with?(keyword+":") # The C# impl is more complicated. Find out why.
     end
 
     def get_rest_trimmed(length)
@@ -48,27 +48,27 @@ module Gherkin
     def split_table_cells(row)
       col = 0
       start_col = col + 1
-      cell = ''
+      cell = ""
       first_cell = true
       while col < row.length
         char = row[col]
         col += 1
-        if char == '|'
+        if char == "|"
           if first_cell
             # First cell (content before the first |) is skipped
             first_cell = false
           else
             yield cell, start_col
           end
-          cell = ''
+          cell = ""
           start_col = col + 1
-        elsif char == '\\'
+        elsif char == "\\"
           char = row[col]
           col += 1
-          if char == 'n'
+          if char == "n"
             cell += "\n"
           else
-            cell += '\\' unless ['|', '\\'].include?(char)
+            cell += "\\" unless ["|", "\\"].include?(char)
             cell += char
           end
         else
@@ -80,11 +80,11 @@ module Gherkin
 
     def tags
       column = @indent + 1;
-      items = @trimmed_line_text.strip.split('@')
+      items = @trimmed_line_text.strip.split("@")
       items = items[1..-1] # ignore before the first @
       items.map do |item|
         length = item.length
-        span = Span.new(column, '@' + item.strip)
+        span = Span.new(column, "@" + item.strip)
         column += length + 1
         span
       end

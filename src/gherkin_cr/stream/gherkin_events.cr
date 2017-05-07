@@ -1,5 +1,5 @@
-require 'gherkin/parser'
-require 'gherkin/pickles/compiler'
+require "gherkin/parser"
+require "gherkin/pickles/compiler"
 
 module Gherkin
   module Stream
@@ -12,8 +12,8 @@ module Gherkin
 
       def enum(source_event)
         Enumerator.new do |y|
-          uri = source_event['uri']
-          source = source_event['data']
+          uri = source_event["uri"]
+          source = source_event["data"]
           begin
             gherkin_document = @parser.parse(source)
 
@@ -22,7 +22,7 @@ module Gherkin
             end
             if (@options[:print_ast])
               y.yield({
-                type: 'gherkin-document',
+                type: "gherkin-document",
                 uri: uri,
                 document: gherkin_document
               })
@@ -31,7 +31,7 @@ module Gherkin
               pickles = @compiler.compile(gherkin_document)
               pickles.each do |pickle|
                 y.yield({
-                  type: 'pickle',
+                  type: "pickle",
                   uri: uri,
                   pickle: pickle
                 })
@@ -48,7 +48,7 @@ module Gherkin
       def yield_errors(y, errors, uri)
         errors.each do |error|
           y.yield({
-            type: 'attachment',
+            type: "attachment",
             source: {
               uri: uri,
               start: {
@@ -58,8 +58,8 @@ module Gherkin
             },
             data: error.message,
             media: {
-              encoding: 'utf-8',
-              type: 'text/vnd.cucumber.stacktrace+plain'
+              encoding: "utf-8",
+              type: "text/vnd.cucumber.stacktrace+plain"
             }
           })
         end

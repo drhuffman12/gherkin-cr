@@ -1,4 +1,4 @@
-require 'gherkin/ast_node'
+require "gherkin/ast_node"
 
 module Gherkin
   class AstBuilder
@@ -118,7 +118,7 @@ module Gherkin
         )
       when :DocString
         separator_token = node.get_tokens(:DocStringSeparator)[0]
-        content_type = separator_token.matched_text == '' ? nil : separator_token.matched_text
+        content_type = separator_token.matched_text == "" ? nil : separator_token.matched_text
         line_tokens = node.get_tokens(:Other)
         content = line_tokens.map { |t| t.matched_text }.join("\n")
 
@@ -167,7 +167,7 @@ module Gherkin
           )
         else
           scenario_outline_node = node.get_single(:ScenarioOutline)
-          raise 'Internal grammar error' unless scenario_outline_node
+          raise "Internal grammar error" unless scenario_outline_node
 
           scenario_outline_line = scenario_outline_node.get_token(:ScenarioOutlineLine)
           description = get_description(scenario_outline_node)

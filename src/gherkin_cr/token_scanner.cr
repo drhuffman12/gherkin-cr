@@ -1,6 +1,6 @@
-require 'stringio'
-require 'gherkin/token'
-require 'gherkin/gherkin_line'
+require "stringio"
+require "gherkin/token"
+require "gherkin/gherkin_line"
 
 module Gherkin
   # The scanner reads a gherkin doc (typically read from a .feature file) and
