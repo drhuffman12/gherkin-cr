@@ -1,0 +1,9 @@
+name: gherkin_cr
+version: 0.1.0
+
+authors:
+  - Daniel Huffman <drhuffman12@yahoo.com>
+
+crystal: 0.22.0
+
+license: MIT
