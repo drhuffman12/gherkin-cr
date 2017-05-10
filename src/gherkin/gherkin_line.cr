@@ -1,23 +1,26 @@
 module Gherkin
   class GherkinLine
-    attr_reader :indent, :trimmed_line_text
-    def initialize(line_text, line_number)
-      @line_text = line_text
-      @line_number = line_number
-      @trimmed_line_text = @line_text.lstrip
-      @indent = @line_text.length - @trimmed_line_text.length
+    getter :indent, :trimmed_line_text, :line_text, :line_number
+    @trimmed_line_text : String
+    @indent : Int32
+    
+    def initialize(@line_text : String?, @line_number : Int32)
+      # @line_text = line_text
+      # @line_number = line_number
+      @trimmed_line_text = (@line_text || "").lstrip
+      @indent = (@line_text || "").size - @trimmed_line_text.size
     end
 
     def start_with?(prefix)
-      @trimmed_line_text.start_with?(prefix)
+      @trimmed_line_text.starts_with?(prefix)
     end
 
     def start_with_title_keyword?(keyword)
       start_with?(keyword+":") # The C# impl is more complicated. Find out why.
     end
 
-    def get_rest_trimmed(length)
-      @trimmed_line_text[length..-1].strip
+    def get_rest_trimmed(size)
+      @trimmed_line_text[size..-1].strip
     end
 
     def empty?
@@ -34,10 +37,10 @@ module Gherkin
     end
 
     def table_cells
-      cells = []
+      cells = [] of String
 
       self.split_table_cells(@trimmed_line_text) do |item, column|
-        cell_indent = item.length - item.lstrip.length
+        cell_indent = item.size - item.lstrip.size
         span = Span.new(@indent + column + cell_indent, item.strip)
         cells.push(span)
       end
@@ -50,7 +53,7 @@ module Gherkin
       start_col = col + 1
       cell = ""
       first_cell = true
-      while col < row.length
+      while col < row.size
         char = row[col]
         col += 1
         if char == "|"
@@ -83,13 +86,18 @@ module Gherkin
       items = @trimmed_line_text.strip.split("@")
       items = items[1..-1] # ignore before the first @
       items.map do |item|
-        length = item.length
+        size = item.size
         span = Span.new(column, "@" + item.strip)
-        column += length + 1
+        column += size + 1
         span
       end
     end
 
-    class Span < Struct.new(:column, :text); end
+    # class Span < Struct.new(:column, :text); end
+    struct Span
+      property :column, :text
+      def initialize(@column : Int32, @text : String)
+      end
+    end
   end
 end

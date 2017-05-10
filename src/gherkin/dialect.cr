@@ -2,7 +2,9 @@ require "json"
 
 module Gherkin
   DIALECT_FILE_PATH = File.expand_path("gherkin-languages.json", File.dirname(__FILE__))
-  DIALECTS = JSON.parse File.open(DIALECT_FILE_PATH, "r:UTF-8").read
+  DIALECTS = JSON.parse(File.read(DIALECT_FILE_PATH, "r:UTF-8"))
+
+  # @spec : JSON::Any
 
   class Dialect
     def self.for(name)
@@ -11,12 +13,13 @@ module Gherkin
       new(spec)
     end
 
-    def initialize(spec)
-      @spec = spec
+    def initialize(@spec : JSON::Any)
+      # @spec = spec
     end
 
-    def feature_keywords
-      @spec.fetch("feature")
+    def feature_keywords : Array(String)
+      # @spec.fetch("feature")
+      @spec["feature"]
     end
 
     def scenario_keywords

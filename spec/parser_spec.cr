@@ -1,9 +1,9 @@
-require "gherkin/parser"
-require "gherkin/token_scanner"
-require "gherkin/token_matcher"
-require "gherkin/ast_builder"
-require "gherkin/errors"
-require "rspec"
+require "./spec_helper"
+require "../src/gherkin/parser"
+require "../src/gherkin/token_scanner"
+require "../src/gherkin/token_matcher"
+require "../src/gherkin/ast_builder"
+require "../src/gherkin/errors"
 
 module Gherkin
   describe Parser do
@@ -14,14 +14,14 @@ module Gherkin
       expect(ast).to eq({
         feature: {
           type: :Feature,
-          tags: [],
-          location: {line: 1, column: 1},
+          tags: [] of Gherkin::Token,
+          location: {:line => 1, :column =>1},
           language: "en",
           keyword: "Feature",
           name: "test",
-          children: []
+          children: [] of Gherkin::Token
         },
-        comments: [],
+        comments: [] of String,
         type: :GherkinDocument
       })
     end
@@ -63,78 +63,78 @@ module Gherkin
       expect(ast).to eq({
                          feature: {type: :Feature,
                           tags: [{type: :Tag,
-                                  location: {line: 1, column: 1},
+                                  location: {:line => 1, :column =>1},
                                   name: "@feature_tag"}],
-                          location: {line: 2, column: 1},
+                          location: {:line => 2, :column =>1},
                           language: "en",
                           keyword: "Feature",
                           name: "feature name",
                           description: "  feature description",
                           children: [{type: :Background,
-                                                 location: {line: 5, column: 4},
+                                                 location: {:line => 5, :column =>4},
                                                  keyword: "Background",
                                                  name: "background name",
                                                  description: "    background description",
                                                  steps: [{type: :Step,
-                                                          location: {line: 7, column: 5},
+                                                          location: {:line => 7, :column =>5},
                                                           keyword: "* ",
                                                           text: "a step"}]},
                                                 {type: :Scenario,
                                                  tags: [{type: :Tag,
-                                                         location: {line: 9, column: 3},
+                                                         location: {:line => 9, :column =>3},
                                                          name: "@scenario_tag"}],
-                                                 location: {line: 10, column: 3},
+                                                 location: {:line => 10, :column =>3},
                                                  keyword: "Scenario",
                                                  name: "scenario name",
                                                  description: "    scenario description",
                                                  steps: [{type: :Step,
-                                                          location: {line: 12, column: 5},
+                                                          location: {:line => 12, :column =>5},
                                                           keyword: "* ",
                                                           text: "a step with a table",
                                                           argument: {type: :DataTable,
-                                                                     location: {line: 13, column: 7},
+                                                                     location: {:line => 13, :column =>7},
                                                                      rows: [{type: :TableRow,
-                                                                             location: {line: 13, column: 7},
+                                                                             location: {:line => 13, :column =>7},
                                                                              cells: [{type: :TableCell,
-                                                                                      location: {line: 13, column: 9},
+                                                                                      location: {:line => 13, :column =>9},
                                                                                       value: "a table"}]}]}}]},
                                                 {type: :ScenarioOutline,
                                                  tags: [{type: :Tag,
-                                                         location: {line: 15, column: 3},
+                                                         location: {:line => 15, :column =>3},
                                                          name: "@outline_tag"}],
-                                                 location: {line: 16, column: 3},
+                                                 location: {:line => 16, :column =>3},
                                                  keyword: "Scenario Outline",
                                                  name: "outline name",
                                                  description: "    outline description",
                                                  steps: [{type: :Step,
-                                                          location: {line: 18, column: 5},
+                                                          location: {:line => 18, :column =>5},
                                                           keyword: "* ",
                                                           text: "a step with a doc string",
                                                           argument: {type: :DocString,
-                                                                     location: {line: 19, column: 7},
+                                                                     location: {:line => 19, :column =>7},
                                                                      contentType: "content_type",
                                                                      content: "  lots of text"}}],
                                                  examples: [{type: :Examples,
                                                              tags: [{type: :Tag,
-                                                                     location: {line: 23, column: 3},
+                                                                     location: {:line => 23, :column =>3},
                                                                      name: "@example_tag"}],
-                                                             location: {line: 24, column: 3},
+                                                             location: {:line => 24, :column =>3},
                                                              keyword: "Examples",
                                                              name: "examples name",
                                                              description: "    examples description",
                                                              tableHeader: {type: :TableRow,
-                                                                           location: {line: 26, column: 5},
+                                                                           location: {:line => 26, :column =>5},
                                                                            cells: [{type: :TableCell,
-                                                                                    location: {line: 26, column: 7},
+                                                                                    location: {:line => 26, :column =>7},
                                                                                     value: "param"}]},
                                                              tableBody: [{type: :TableRow,
-                                                                          location: {line: 27, column: 5},
+                                                                          location: {:line => 27, :column =>5},
                                                                           cells: [{type: :TableCell,
-                                                                                   location: {line: 27, column: 7},
+                                                                                   location: {:line => 27, :column =>7},
                                                                                    value: "value"}]}]}]}],
                           },
                           comments: [{type: :Comment,
-                                      location: {line: 22, column: 1},
+                                      location: {:line => 22, :column =>1},
                                       text: "                # Random file comment"}],
                           type: :GherkinDocument}
                      )
@@ -146,32 +146,32 @@ module Gherkin
       expect(ast).to eq({
         feature: {
           type: :Feature,
-          tags: [],
-          location: {line: 1, column: 1},
+          tags: [] of Gherkin::Token,
+          location: {:line => 1, :column =>1},
           language: "en",
           keyword: "Feature",
           name: "test",
-          children: []
+          children: [] of Gherkin::Token
         },
-        comments: [],
+        comments: [] of String,
         type: :GherkinDocument
       })
     end
 
     it "parses io feature" do
       parser = Parser.new
-      ast = parser.parse(StringIO.new("Feature: test"))
+      ast = parser.parse(IO::Memory.new("Feature: test"))
       expect(ast).to eq({
         feature: {
           type: :Feature,
-          tags: [],
-          location: {line: 1, column: 1},
+          tags: [] of Gherkin::Token,
+          location: {:line => 1, :column =>1},
           language: "en",
           keyword: "Feature",
           name: "test",
-          children: []
+          children: [] of Gherkin::Token
         },
-        comments: [],
+        comments: [] of String,
         type: :GherkinDocument
       })
     end
@@ -184,27 +184,27 @@ module Gherkin
       expect(ast1).to eq({
         feature: {
           type: :Feature,
-          tags: [],
-          location: {line: 1, column: 1},
+          tags: [] of Gherkin::Token,
+          location: {:line => 1, :column =>1},
           language: "en",
           keyword: "Feature",
           name: "test",
-          children: []
+          children: [] of Gherkin::Token
         },
-        comments: [],
+        comments: [] of String,
         type: :GherkinDocument
       })
       expect(ast2).to eq({
         feature: {
           type: :Feature,
-          tags: [],
-          location: {line: 1, column: 1},
+          tags: [] of Gherkin::Token,
+          location: {:line => 1, :column =>1},
           language: "en",
           keyword: "Feature",
           name: "test2",
-          children: []
+          children: [] of Gherkin::Token
         },
-        comments: [],
+        comments: [] of String,
         type: :GherkinDocument
       })
     end
@@ -232,14 +232,14 @@ module Gherkin
       expect(ast).to eq({
         feature: {
           type: :Feature,
-          tags: [],
-          location: {line: 1, column: 1},
+          tags: [] of Gherkin::Token,
+          location: {:line => 1, :column =>1},
           language: "en",
           keyword: "Feature",
           name: "Foo",
           children: [{
             :type=>:Scenario,
-            :tags=>[],
+            :tags=>[] of Gherkin::Token,
             :location=>{:line=>2, :column=>3},
             :keyword=>"Scenario",
             :name=>"Bar",
@@ -252,7 +252,7 @@ module Gherkin
                           :location=>{:line=>4, :column=>7},
                           :content=>"closed docstring"}}]}]
         },
-        comments: [],
+        comments: [] of String,
         type: :GherkinDocument
       })
     end
@@ -265,14 +265,14 @@ module Gherkin
       expect(ast).to eq({
         feature: {
           type: :Feature,
-          tags: [],
-          location: {line: 1, column: 1},
+          tags: [] of Gherkin::Token,
+          location: {:line => 1, :column =>1},
           language: "no",
           keyword: "Egenskap",
           name: "i18n support",
-          children: []
+          children: [] of Gherkin::Token
         },
-        comments: [],
+        comments: [] of String,
         type: :GherkinDocument
       })
     end

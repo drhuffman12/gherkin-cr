@@ -1,10 +1,11 @@
 # This file is generated. Do not edit! Edit gherkin-ruby.razor instead.
-require "gherkin/ast_builder"
-require "gherkin/token_matcher"
-require "gherkin/token_scanner"
-require "gherkin/errors"
+require "../gherkin/ast_builder"
+require "../gherkin/token_matcher"
+require "../gherkin/token_scanner"
+require "../gherkin/errors"
 
 module Gherkin
+  # alias TagNode = Gherkin::Token # | Hash(Symbol, String | Symbol | Nil) # Hash(Symbol, Symbol | String | Nil)
 
   RULE_TYPE = [
     :None,
@@ -49,21 +50,24 @@ module Gherkin
   ]
 
   class ParserContext
-    attr_reader :token_scanner, :token_matcher, :token_queue, :errors
+    property :token_scanner, :token_matcher, :token_queue, :errors
+    # @token_scanner : TokenScanner
+    # @token_matcher : TokenMatcher
+    # @token_queue : Array(Gherkin::Token)
+    # @errors : Array(Exception)
 
-    def initialize(token_scanner, token_matcher, token_queue, errors)
-      @token_scanner = token_scanner
-      @token_matcher = token_matcher
-      @token_queue = token_queue
-      @errors = errors
+    def initialize(@token_scanner : TokenScanner, @token_matcher : TokenMatcher, @token_queue : Array(Gherkin::Token), @errors : Array(Exception))
     end
   end
 
   class Parser
-    attr_accessor :stop_at_first_error
+    # property :stop_at_first_error
+    @stop_at_first_error : Exception?
+    getter :stop_at_first_error
 
     def initialize(ast_builder=AstBuilder.new)
       @ast_builder = ast_builder
+      @stop_at_first_error = nil
     end
 
     def parse(token_scanner, token_matcher=TokenMatcher.new)
@@ -74,8 +78,8 @@ module Gherkin
       context = ParserContext.new(
         token_scanner,
         token_matcher,
-        [],
-        []
+        [] of Gherkin::Token,
+        [] of Exception
       )
 
       start_rule(context, :GherkinDocument);
@@ -84,7 +88,11 @@ module Gherkin
       begin
         token = read_token(context)
         state = match_token(state, token, context)
-      end until(token.eof?)
+      end
+      while(token.eof?)
+        token = read_token(context)
+        state = match_token(state, token, context)
+      end
 
       end_rule(context, :GherkinDocument)
 
@@ -101,7 +109,7 @@ module Gherkin
 
     def add_error(context, error)
       context.errors.push(error)
-      raise CompositeParserException, context.errors if context.errors.length > 10
+      raise CompositeParserException.new(context.errors) if context.errors.size > 10
     end
 
     def start_rule(context, rule_type)
@@ -2273,7 +2281,7 @@ module Gherkin
     def lookahead_0(context, currentToken)
       currentToken.detach
       token = nil
-      queue = []
+      queue = [] of Gherkin::Token
       match = false
       loop do
         token = read_token(context)
@@ -2292,22 +2300,19 @@ module Gherkin
 
       return match
     end
-    
 
-    private
-
-    def handle_ast_error(context, &action)
+    private def handle_ast_error(context, &action)
       handle_external_error(context, true, &action)
     end
 
-    def handle_external_error(context, default_value, &action)
+    private def handle_external_error(context, default_value, &action)
       return action.call if stop_at_first_error
 
       begin
         return action.call
-      rescue CompositeParserException => e
+      rescue e : CompositeParserException
         e.errors.each { |error| add_error(context, error) }
-      rescue ParserException => e
+      rescue e : ParserException
         add_error(context, e)
       end
       default_value

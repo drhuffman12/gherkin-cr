@@ -1,10 +1,14 @@
 module Gherkin
   class AstNode
-    attr_reader :rule_type
+    # alias TagNode = Hash(Symbol, Symbol | String | Nil)
+
+    getter :rule_type
+    @rule_type : Symbol
 
     def initialize(rule_type)
       @rule_type = rule_type
-      @_sub_items = Hash.new { |hash, key| hash[key] = [] } # returns [] for unknown key
+      # @_sub_items = Hash.new { |hash, key| hash[key] = [] of Gherkin::Token } # returns [] for unknown key
+      @_sub_items = Hash(Symbol,Array(Gherkin::Token)).new([] of Gherkin::Token) # returns [] for unknown key
     end
 
     def add(rule_type, obj)

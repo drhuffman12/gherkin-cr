@@ -22,8 +22,7 @@ module Gherkin
       @tokens_text
     end
 
-    private
-    def format_token(token)
+    private def format_token(token)
       return "EOF" if token.eof?
 
       sprintf "(%s:%s)%s:%s/%s/%s",
@@ -32,7 +31,8 @@ module Gherkin
         token.matched_type,
         token.matched_keyword,
         token.matched_text,
-        Array(token.matched_items).map { |i| "#{i.column}:#{i.text}"}.join(",")
+        # Array(token.matched_items).map { |i| "#{i.column}:#{i.text}"}.join(",")
+        token.matched_items.map { |i| "#{i.column}:#{i.text}"}.join(",")
     end
 
   end

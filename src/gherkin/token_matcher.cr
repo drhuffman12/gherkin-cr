@@ -1,12 +1,19 @@
-require "gherkin/dialect"
-require "gherkin/errors"
+require "../gherkin/dialect"
+require "../gherkin/errors"
 
 module Gherkin
   class TokenMatcher
     LANGUAGE_PATTERN = /^\s*#\s*language\s*:\s*([a-zA-Z\-_]+)\s*$/
+    # alias LocationType = Hash(Symbol,Int32)
+    # Hash(Symbol, Int32)
 
-    def initialize(dialect_name = "en")
+    @active_doc_string_separator : String?
+    @dialect : Dialect?
+    # property :dialect # : Dialect
+
+    def initialize(@dialect_name : String = "en")
       @default_dialect_name = dialect_name
+      # @dialect = nil
       change_dialect(dialect_name, nil)
       reset
     end
@@ -25,7 +32,9 @@ module Gherkin
     end
 
     def match_FeatureLine(token)
-      match_title_line(token, :FeatureLine, @dialect.feature_keywords)
+      feature_keywords = [] of String
+      feature_keywords = @dialect.feature_keywords if !@dialect.is_a?(Nil)
+      match_title_line(token, :FeatureLine, feature_keywords)
     end
 
     def match_ScenarioLine(token)
@@ -91,7 +100,7 @@ module Gherkin
 
       content_type = nil
       if is_open
-        content_type = token.line.get_rest_trimmed(separator.length)
+        content_type = token.line.get_rest_trimmed(separator.size)
         @active_doc_string_separator = separator
         @indent_to_remove = token.line.indent
       else
@@ -127,14 +136,12 @@ module Gherkin
 
       return false unless keyword
 
-      title = token.line.get_rest_trimmed(keyword.length)
+      title = token.line.get_rest_trimmed(keyword.size)
       set_token_matched(token, :StepLine, title, keyword)
       return true
     end
 
-    private
-
-    def change_dialect(dialect_name, location)
+    private def change_dialect(dialect_name, location : Hash(Symbol,Int32)?)
       dialect = Dialect.for(dialect_name)
       raise NoSuchLanguageException.new(dialect_name, location) if dialect.nil?
 
@@ -142,27 +149,45 @@ module Gherkin
       @dialect = dialect
     end
 
-    def match_title_line(token, token_type, keywords)
+    private def match_title_line(token, token_type, keywords)
       keyword = keywords.detect { |k| token.line.start_with_title_keyword?(k) }
 
       return false unless keyword
 
-      title = token.line.get_rest_trimmed(keyword.length + ":".length)
+      title = token.line.get_rest_trimmed(keyword.size + ":".size)
       set_token_matched(token, token_type, title, keyword)
       true
     end
 
-    def set_token_matched(token, matched_type, text=nil, keyword=nil, indent=nil, items=[])
+    private def set_token_matched(token, matched_type, text=nil, keyword=nil, indent : Int32? = nil, items = [] of Gherkin::GherkinLine::Span) # Gherkin::Token
       token.matched_type = matched_type
       token.matched_text = text && text.chomp
       token.matched_keyword = keyword
-      token.matched_indent = indent || (token.line && token.line.indent) || 0
+      # token.matched_indent = indent || (token.line && token.line.indent) || 0
+      token.matched_indent = case
+        when indent
+          indent
+        when (token && token.line && typeof(token.line) == Int32)
+          raise "Wrong line type (Int32); should be Gerkin::GherkinLine"
+        when (token && token.line && token.line.nil?)
+          raise "Wrong line type (Nil); should be Gerkin::GherkinLine"
+        when (token && token.line && !token.line.nil?)
+          begin
+            token.line.indent
+          rescue Exception
+            0
+          end
+        else 0
+      end
       token.matched_items = items
+      if token.location.nil?
+        token.location = {:line => 0, :column => 0}
+      end
       token.location[:column] = token.matched_indent + 1
       token.matched_gherkin_dialect = @dialect_name
     end
 
-    def unescape_docstring(text)
+    private def unescape_docstring(text)
       @active_doc_string_separator ? text.gsub("\\\"\\\"\\\"", "\"\"\"") : text
     end
   end

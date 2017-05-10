@@ -1,2 +1,2 @@
 require "spec"
-require "../src/gherkin_cr"
+require "../src/gherkin"

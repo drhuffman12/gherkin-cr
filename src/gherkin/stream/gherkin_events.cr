@@ -1,5 +1,5 @@
-require "gherkin/parser"
-require "gherkin/pickles/compiler"
+require "../parser"
+require "../pickles/compiler"
 
 module Gherkin
   module Stream

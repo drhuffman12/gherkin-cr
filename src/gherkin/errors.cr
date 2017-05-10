@@ -1,17 +1,30 @@
 module Gherkin
-  class ParserError < StandardError; end
+  # alias LocationType = Hash(Symbol,Int32)
+
+  class ParserError < Exception
+    @errors : Array(Exception)
+    getter :errors
+    def initialize(@message : String = self.class.name)
+      super
+      @errors = [] of Exception
+    end
+  end
 
   class ParserException < ParserError
-    attr_reader :location
+    getter :location
 
-    def initialize(message, location)
-      @location = location
-      super("(#{location[:line]}:#{location[:column] || 0}): #{message}")
+    def initialize(@message, @location : Hash(Symbol,Int32)?)
+      # @location = location
+      line = location && location[:line] ? location[:line] : "(n/a)"
+      column = location && location[:column] ? location[:column] : 0
+      super("(#{line}:#{column}): #{message}")
     end
   end
 
   class NoSuchLanguageException < ParserException
-    def initialize(language, location)
+    # alias LocationType = Hash(Symbol,Int32)
+
+    def initialize(language, location : Hash(Symbol,Int32)?)
       super "Language not supported: #{language}", location
     end
   end
@@ -19,11 +32,11 @@ module Gherkin
   class AstBuilderException < ParserException; end
 
   class CompositeParserException < ParserError
-    attr_reader :errors
 
-    def initialize(errors)
-      @errors = errors
-      super "Parser errors:\n" + errors.map(&:message).join("\n")
+    def initialize(@errors)
+      # @errors = errors
+      # super "Parser errors:\n" + errors.map(&:message).join("\n")
+      super "Parser errors:\n" + errors.map{|m| m.message}.join("\n")
     end
   end
 
